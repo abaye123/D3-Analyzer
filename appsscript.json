@@ -1,0 +1,29 @@
+{
+    "timeZone": "Asia/Jerusalem",
+    "dependencies": {},
+    "exceptionLogging": "STACKDRIVER",
+    "oauthScopes": [
+      "https://www.googleapis.com/auth/drive.readonly",
+      "https://www.googleapis.com/auth/script.container.ui",
+      "https://www.googleapis.com/auth/drive.addons.metadata.readonly"
+    ],
+    "runtimeVersion": "V8",
+    "addOns": {
+      "common": {
+        "name": "D3 Analyzer",
+        "logoUrl": "https://www.gstatic.com/images/icons/material/system/2x/bubble_chart_black_24dp.png",
+        "layoutProperties": {
+          "primaryColor": "#3d1aed"
+        },
+        "versionNumber": "1.0.0",
+        "homepageTrigger": {
+          "runFunction": "onHomepage"
+        }
+      },
+      "drive": {
+        "onItemsSelectedTrigger": {
+          "runFunction": "onDriveItemsSelected"
+        }
+      }
+    }
+  }
