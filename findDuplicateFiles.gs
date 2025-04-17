@@ -18,6 +18,31 @@ function findDuplicateFiles(folder) {
   return duplicates;
 }
 
+function getFileHash(fileId) {
+  const accessToken = ScriptApp.getOAuthToken();
+  const url = `https://www.googleapis.com/drive/v3/files/${fileId}`;
+
+  const response = UrlFetchApp.fetch(url, {
+    method: 'get',
+    headers: {
+      Authorization: 'Bearer ' + accessToken,
+      Range: 'bytes=0-5242879'  // 1MB
+    },
+    muteHttpExceptions: true
+  });
+
+  if (response.getResponseCode() !== 206 && response.getResponseCode() !== 200) {
+    Logger.log('בעיה בהורדת חלק מהקובץ: ' + response.getContentText());
+    return null;
+  }
+
+  const partialBytes = response.getContent();
+  const digest = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, partialBytes);
+  const hash = digest.map(b => ('0' + (b & 0xff).toString(16)).slice(-2)).join('');
+  return hash;
+}
+
+// old
 function hashFile(file) {
   try {
     const blob = file.getBlob();
@@ -35,7 +60,8 @@ function findDuplicateFilesByHash(folder) {
   const duplicates = [];
   while (files.hasNext()) {
     const file = files.next();
-    const hash = hashFile(file);
+    const fileId = file.getId();
+    const hash = getFileHash(fileId);
     if (!hash) continue;
     if (seen[hash]) {
       duplicates.push({
